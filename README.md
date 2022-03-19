@@ -38,3 +38,13 @@ C
 x is the octave number 0–8 and y is the note number as the number of semitones above the
 note C. The values of x and y in a note end command shall be ignored by the receiver unless
 polyphony is implemented as an advanced feature
+
+
+
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
