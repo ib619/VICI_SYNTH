@@ -3,28 +3,14 @@
 #include <STM32FreeRTOS.h>
 #include <ES_CAN.h>
 
-int32_t delayCounter = 0;
-
-#define FIFO_SIZE 4096
-#define DELAY_LENGTH 8000
-
-
-//Constants
+// Constants
   const uint32_t interval = 100; //Display update interval
-
-// Main keyboard bool
-  bool is_main = true;
-  volatile int8_t my_octave = 4;
-  volatile int8_t octave_modifier = 1;
-  volatile int8_t octave_modifier1 = 1;
-  volatile bool reverb_active = false;
-  volatile int8_t reverb_count = 0;
   
+// Handshake
+  bool is_main = true;
+  bool has_left = false;
+  bool has_right = false;
 
-//handshake
-bool has_left = false;
-bool has_right = false;
-uint32_t ID;
 
 //Pin definitions
   //Row select and enable
@@ -55,36 +41,37 @@ uint32_t ID;
   const int HKOE_BIT = 6;
 
 //Display driver object
-U8G2_SSD1305_128X32_NONAME_F_HW_I2C u8g2(U8G2_R0);
+  U8G2_SSD1305_128X32_NONAME_F_HW_I2C u8g2(U8G2_R0);
 
 // Mutex
-static uint8_t keyArray[7];
-SemaphoreHandle_t keyArrayMutex;
-SemaphoreHandle_t CAN_TX_Semaphore;
+  static uint8_t keyArray[7];
+  SemaphoreHandle_t keyArrayMutex;
+  SemaphoreHandle_t CAN_TX_Semaphore;
 
 // CAN queue handler
-QueueHandle_t msgInQ;
-QueueHandle_t msgIn1Q;
-QueueHandle_t msgOutQ;
+  uint32_t ID;
+  QueueHandle_t msgInQ;
+  QueueHandle_t msgIn1Q;
+  QueueHandle_t msgOutQ;
 
 // Sample queue handler
-QueueHandle_t DelayQ;
-uint64_t time_delta = 0;
-uint64_t time_delta1 = 0;
+  QueueHandle_t DelayQ;
+  int32_t delayCounter = 0;
+  uint64_t time_delta = 0;
+  uint64_t time_delta1 = 0;
 
 
-// waveform generation
-volatile int16_t currentIndex;
-const int32_t stepSizes [] = {51076922, 54112683, 57330004, 60740598, 64352275, 68178701, 72231588, 76528508, 81077269, 85899346, 91006452, 96418111, 0};
-const int32_t stepSizeLUT [] = {141515, 131515, 111515, 71515, 151415, 151315, 151115, 150715, 151514, 151513, 151511, 151507};
+// ------------------------------------------- WAVEFORM GENERATION ------------------------------------------------------------------------
 const String Notes [] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "--"};
-const double frequencies [] = {261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392, 415.3, 440, 466.16, 493.88, 0};
 
 //Octave recognition
 const int8_t oct_count [] =    {31,15,7,3,1,0,0,0,0};
 const int8_t oct_lenCount [] = {1,1,1,1,1,1,2,3,4};
+volatile int8_t my_octave = 4;
+volatile int8_t octave_modifier = 1;
+volatile int8_t octave_modifier1 = 1;
 
-// sinewave lookup tables
+// LOOKUP TABLES
 const int16_t sine_lut_sizes [] = {84, 79, 74, 70, 66, 62, 59, 56, 52, 50, 47, 44, 0};
 
 const int16_t sine_lut_start_index [] = {0, 85, 165, 240, 311, 378, 441, 501, 558, 611, 662, 710, 0};
@@ -160,7 +147,8 @@ const int16_t wave_lut [] = {
 const int16_t wave_lut_offset [] = {0, 755, 1510, 2256, 3020};
 const String waveforms [] = {"SIN", "SAW", "TRG", "SQR", "CML"};
 
-// Knob detection structure
+// -------------------------------------- KNOB DETECTION STRUCTURE ------------------------------------------
+// Knob class declaration
 class Knob {
   private:
     const int8_t increment [16] = {0, 1, -1, 2, -1, 0, 2, 1, 1, 2, 0, -1, 2, -1, 1, 0};
@@ -205,14 +193,23 @@ class Knob {
     }
 };
 
+// Knob decode lookup tables initialization
 int16_t knob2_state[] = {0, 4, 8, 12, 400, 404, 408, 412, 800, 804, 808, 812, 1200, 1204, 1208, 1212};
-Knob knob2_obj(knob2_state, 0, 32, 12);
-
 int16_t knob3_state[] = {0, 1, 2, 3, 100, 101, 102, 103, 200, 201, 202, 203, 300, 301, 302, 303};
+
+// Knob objects initialisation
+Knob knob2_obj(knob2_state, 0, 32, 12);
 Knob knob3_obj(knob3_state, 2, 14, 3);
 Knob knob0_obj(knob2_state, 2, 162, 12);
 Knob knob1_obj(knob3_state, 0, 8, 3);
 
+// Knob toggle variables initialisation
+volatile bool knob0_toggle = false;
+volatile bool knob1_toggle = false;
+volatile bool knob2_toggle = false;
+volatile bool knob3_toggle = false;
+
+// ------------------------------------ DETECTION AND DECODING OF KEYS -------------------------------------------
 //Function to set outputs using key matrix
 void setOutMuxBit(const uint8_t bitIdx, const bool value) {
       digitalWrite(REN_PIN,LOW);
@@ -293,18 +290,6 @@ void setRow(uint8_t rowIdx){
 
 }
 
-int8_t decodeKey(const int8_t bit0, const int8_t bit1, const int8_t bit2){
-  int32_t value = bit0*10000 + bit1*100 + bit2;
-
-  for(int8_t i = 0; i < 12; i++){
-    if (stepSizeLUT[i] == value){
-      return i;
-    }
-  }
-
-  return 12;
-}
-
 volatile int8_t pressed_keys[4] = {12};
 volatile int8_t pressed_octave[4] = {my_octave, my_octave, my_octave, my_octave};
 volatile int8_t previous_pressed_keys[4] = {12};
@@ -313,9 +298,11 @@ volatile int8_t played_notes2 [4] = {12,12,12,12};
 volatile int8_t played_octave;
 int8_t played_notes1[4] = {12, 12, 12, 12};
 int8_t played_octave1 [4];
-uint32_t c = 0;
 const int16_t key_select [] = {256, 512, 1024, 2048, 16, 32, 64, 128, 1, 2, 4, 8};
 const int16_t key_power [] = {8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3};
+volatile int16_t joystick_x_val = 0;
+volatile int16_t joystick_y_val = 0;
+volatile bool joystick_toggle = 0;
 
 
 void decodeMultipleKeys(const int8_t w0, const int8_t w1, const int8_t w2){
@@ -372,12 +359,84 @@ void decodeMultipleKeys(const int8_t w0, const int8_t w1, const int8_t w2){
 
   // Send message if change has been detected
   if(!no_changes_detected && !is_main){
-    c++;
     xQueueSend(msgOutQ, TX_Message, portMAX_DELAY);
   }
   
 }
 
+void scanKeysTask(void * pvParameters){
+  static int8_t prev_val_row6 = 0;
+  static int8_t cur_val_row6 = 0;
+
+  static int8_t prev_val_row5 = 0;
+  static int8_t cur_val_row5 = 0;
+
+  static int8_t prev_val_joystick = 0;
+  static int8_t cur_val_joystick = 0;
+
+  const TickType_t xFrequency = 20/portTICK_PERIOD_MS;
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+
+  while (1){
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    // keypress detection code
+
+    xSemaphoreTake(keyArrayMutex, portMAX_DELAY);
+    
+    // Record previous knob values
+    prev_val_row6 = cur_val_row6;
+    prev_val_row5 = cur_val_row5;
+    prev_val_joystick = cur_val_joystick;
+
+    // reading rows
+    for (int i = 0; i < 7; i++){
+      // select the row to read
+      setRow(i);
+      delayMicroseconds(3);
+
+      //record the value into the array
+      keyArray[i] = readCols();
+    }
+
+    decodeMultipleKeys(keyArray[0], keyArray[1], keyArray[2]); // Decoding keypress of multiple keys
+
+    //Processing knob rotation
+    knob2_obj.decode(keyArray[3]);
+    knob3_obj.decode(keyArray[3]);
+    knob1_obj.decode(keyArray[4]);
+    knob0_obj.decode(keyArray[4]);
+    my_octave = knob3_obj.count/2;
+
+    //Processing knob pressing
+    cur_val_row6 = keyArray[6];
+    cur_val_row5 = keyArray[5];
+    if (prev_val_row6 == 15 && cur_val_row6 == 14){
+      knob0_toggle = !knob0_toggle;
+    }
+    if (prev_val_row6 == 15 && cur_val_row6 == 13){
+      knob1_toggle = !knob1_toggle;
+    }
+    if (prev_val_row5 == 15 && cur_val_row5 == 14){
+      knob2_toggle = !knob2_toggle;
+    }
+    if (prev_val_row5 == 15 && cur_val_row5 == 13){
+      knob3_toggle = !knob3_toggle;
+    }
+
+    // Processing joystick pressing
+    cur_val_joystick = keyArray[5];
+    if (prev_val_joystick == 15 && cur_val_joystick == 11){
+      joystick_toggle = !joystick_toggle;
+    }
+    xSemaphoreGive(keyArrayMutex);
+
+    // Processing Joystick Movement
+    joystick_x_val = analogRead(JOYX_PIN);
+    joystick_y_val = analogRead(JOYY_PIN);
+  }
+}
+
+// ------------------------------------------ CAN COMMUNICATION ----------------------------------------------
 void CAN_RX_ISR (void){
   uint8_t RX_Message_ISR[8];
   uint32_t IDR;
@@ -430,6 +489,7 @@ void CAN_TX_ISR (void) {
   xSemaphoreGiveFromISR(CAN_TX_Semaphore,NULL);
 }
 
+// ---------------------------------- SAMPLE GENERATION AND PLAYBACK ---------------------------------------------
 void sampleISR (){
   static uint64_t time_prev = 0;
   time_prev = micros();
@@ -449,19 +509,8 @@ void sampleISR (){
 
   int16_t Vout = 0;
   int8_t scaler = 1;
-  /*
-    for (int8_t i = 0; i < 4; i++){
-      if (pressed_keys[i] == 12){
-        played_notes1[i] = played_notes[index];
-        played_octave1[i] = my_octave-1+octave_modifier;
-        index++;
-      } else {
-        played_notes1[i] = pressed_keys[index1];
-        played_octave1[i] = my_octave;
-        index1++;
-      }
-    }
-  */
+  
+  // Combination of inputs from different keyboards
   int8_t index = 0;
   for (int8_t i = 0; i < 4; i++){
     played_notes1[i] = pressed_keys[i];
@@ -483,8 +532,7 @@ void sampleISR (){
     }
   }
 
-
-
+  // Oscillatiors
   if(played_notes1[0] != 12){
     phaseAcc = wave_lut[sine_lut_start_index[played_notes1[0]]+lenCount+wave_lut_offset[knob1_obj.count/2]];
 
@@ -545,10 +593,11 @@ void sampleISR (){
   }
   } else {counter3 = 0; lenCount3 = 0;}
   
-  
+  // Signal scaliing according to number of notes played
   if (is_main){Vout = (phaseAcc/scaler) >> 8;}
   
-  if (reverb_active){
+  // Delay Processing
+  if (knob0_toggle){
   if (delayCounter < knob0_obj.count*50){
     delayCounter++;
     xQueueSendFromISR(DelayQ, &Vout, NULL);
@@ -566,52 +615,13 @@ void sampleISR (){
     }
   }
 
+  // Volume knob scaling and speaker output
   Vout = Vout >> (8 - knob2_obj.count/4);
   analogWrite(OUTR_PIN, Vout + 130);
   time_delta1 = micros() - time_prev;
 }
 
-void scanKeysTask(void * pvParameters){
-  static int8_t prev_val = 0;
-  static int8_t cur_val = 0;
-
-  const TickType_t xFrequency = 20/portTICK_PERIOD_MS;
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-
-  while (1){
-    vTaskDelayUntil(&xLastWakeTime, xFrequency);
-    // keypress detection code
-
-    xSemaphoreTake(keyArrayMutex, portMAX_DELAY);
-    prev_val = cur_val;
-    for (int i = 0; i < 7; i++){
-      // select the row to read
-      setRow(i);
-      delayMicroseconds(3);
-
-      //record the value into the array
-      keyArray[i] = readCols();
-      
-    }
-
-    //currentIndex = decodeKey(keyArray[0], keyArray[1], keyArray[2]);
-    decodeMultipleKeys(keyArray[0], keyArray[1], keyArray[2]); // Decoding keypress of multiple keys
-
-    //Processing knobs
-    knob2_obj.decode(keyArray[3]);
-    knob3_obj.decode(keyArray[3]);
-    my_octave = knob3_obj.count/2;
-    knob1_obj.decode(keyArray[4]);
-    knob0_obj.decode(keyArray[4]);
-    reverb_count = knob0_obj.count/2;
-    cur_val = keyArray[6];
-    if (prev_val == 15 && cur_val == 14){
-      reverb_active = !reverb_active;
-    }
-    xSemaphoreGive(keyArrayMutex);
-  }
-}
-
+// ------------------------------------ HANDSHAKE FUNCTION -----------------------------------------------
 void handshake(){
   xSemaphoreTake(keyArrayMutex, portMAX_DELAY);
   for (int i = 0; i < 7; i++){
@@ -636,6 +646,7 @@ void handshake(){
   xSemaphoreGive(keyArrayMutex);
 }
 
+// -------------------------------------------- UPDATING THE DISPLAY --------------------------------------------
 void displayUpdateTask(void * pvParameters){
   const TickType_t xFrequency = 100/portTICK_PERIOD_MS;
   TickType_t xLastWakeTime = xTaskGetTickCount();
@@ -645,9 +656,9 @@ void displayUpdateTask(void * pvParameters){
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB08_tr);
     u8g2.setCursor(5,10);
-    u8g2.print("ViciSynth");
+    u8g2.print("VICIsynth");
     u8g2.setCursor(5,20);
-    if (reverb_active){u8g2.print("> Delay: " + String(knob0_obj.count/2));} else {u8g2.print("Delay: " + String(knob0_obj.count/2));}
+    if (knob0_toggle){u8g2.print("> Delay: " + String(knob0_obj.count/2));} else {u8g2.print("Delay: " + String(knob0_obj.count/2));}
     u8g2.setCursor(70,20);
     u8g2.print("Vol: " + String(knob2_obj.count/2));
     u8g2.setCursor(5,30);
@@ -664,9 +675,13 @@ void displayUpdateTask(void * pvParameters){
     u8g2.setCursor(115,10);
     u8g2.print(Notes[played_notes1[3]]);
     u8g2.sendBuffer();
+
+    //Toggle LED
+    digitalToggle(LED_BUILTIN);
   }
 }
 
+// -------------------------------------- SETUP CODE ---------------------------------------------------
 void setup() {
   // put your setup code here, to run once:
 
@@ -696,15 +711,13 @@ void setup() {
 
   //Initialise UART
   Serial.begin(9600);
-  Serial.println("Hello World");
-  //Serial.println(String(played_notes[0]) + String(played_notes[1]) + String(played_notes[2]) + String(played_notes[3]));
 
-  //Setup timer 2
-  TIM_TypeDef *Instance2 = TIM1;
-  HardwareTimer *sampleTimer2 = new HardwareTimer(Instance2);
-  sampleTimer2->setOverflow(22000, HERTZ_FORMAT);
-  sampleTimer2->attachInterrupt(sampleISR);
-  sampleTimer2->resume();
+  //Setup timer
+  TIM_TypeDef *Instance = TIM1;
+  HardwareTimer *sampleTimer = new HardwareTimer(Instance);
+  sampleTimer->setOverflow(22000, HERTZ_FORMAT);
+  sampleTimer->attachInterrupt(sampleISR);
+  sampleTimer->resume();
 
   // Keyboard Scanning Thread intialisaation
   TaskHandle_t scanKeysHandle = NULL;
@@ -740,6 +753,7 @@ void setup() {
     &decodeHandle1 // Pointer to store the task handle
   );
 
+  // CAN Trnsmission Thread initialisation
   TaskHandle_t TX_Handle = NULL;
   xTaskCreate(
     CAN_TX_Task, // Function that implements the task
@@ -775,7 +789,7 @@ void setup() {
   setCANFilter();
   CAN_Start();
 
-  // Initialise the receive queue
+  // Initialise the FreeRTOS queues
   msgInQ = xQueueCreate(36, 8);
   msgIn1Q = xQueueCreate(36, 8);
   msgOutQ = xQueueCreate(36, 8);
@@ -787,6 +801,5 @@ void setup() {
 
 void loop() {
  // Empty loop
-
 }
 
