@@ -2,14 +2,15 @@
 #include <U8g2lib.h>
 #include <STM32FreeRTOS.h>
 #include <ES_CAN.h>
-
-// Constants
-  const uint32_t interval = 100; //Display update interval
   
 // Handshake
   bool is_main = true;
   bool has_left = false;
   bool has_right = false;
+
+
+// time check
+uint64_t time = 0;
 
 
 //Pin definitions
@@ -49,17 +50,12 @@
   SemaphoreHandle_t CAN_TX_Semaphore;
 
 // CAN queue handler
-  uint32_t ID;
   QueueHandle_t msgInQ;
-  QueueHandle_t msgIn1Q;
   QueueHandle_t msgOutQ;
 
 // Sample queue handler
   QueueHandle_t DelayQ;
   int32_t delayCounter = 0;
-  uint64_t time_delta = 0;
-  uint64_t time_delta1 = 0;
-
 
 // ------------------------------------------- WAVEFORM GENERATION ------------------------------------------------------------------------
 const String Notes [] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "--"};
@@ -294,6 +290,8 @@ volatile int8_t pressed_keys[4] = {12};
 volatile int8_t pressed_octave[4] = {my_octave, my_octave, my_octave, my_octave};
 volatile int8_t previous_pressed_keys[4] = {12};
 volatile int8_t played_notes [4] = {12,12,12,12};
+volatile int8_t played_notes_test [4] = {12,12,12,12};
+volatile int8_t played_octave_test [4] = {0,0,0,0};
 volatile int8_t played_notes2 [4] = {12,12,12,12};
 volatile int8_t played_octave;
 int8_t played_notes1[4] = {12, 12, 12, 12};
@@ -331,34 +329,40 @@ void decodeMultipleKeys(const int8_t w0, const int8_t w1, const int8_t w2){
     }
   }
 
-  // Format message
-  TX_Message[0] = pressed_keys[0];
-  TX_Message[1] = pressed_keys[1];
-  TX_Message[2] = pressed_keys[2];
-  TX_Message[3] = pressed_keys[3];
-  TX_Message[4] = my_octave;
-  TX_Message[5] = my_octave;
-  TX_Message[6] = my_octave;
-  if (has_right) {
-    TX_Message[7] = 0;
-    ID = 0x123;
-  } else if (has_left) {
-    TX_Message[7] = 2;
-    ID = 0x124;
-  } else {
-    TX_Message[7] = 1;
-    ID = 0x123;
-  }
   
-
   // Detect changes
   bool no_changes_detected = true;
+  int8_t detectedKey = 0;
+  bool send_message = true;
+  char action = 'N';
   for (int8_t i = 0; i < 4; i++){
     no_changes_detected = no_changes_detected && (pressed_keys[i] == previous_pressed_keys[i]);
+    if (pressed_keys[i] != previous_pressed_keys[i]) {
+      int16_t prev_key_sum = previous_pressed_keys[0] + previous_pressed_keys[1] + previous_pressed_keys[2] + previous_pressed_keys[3];
+      int16_t cur_key_sum = pressed_keys[0] + pressed_keys[1] + pressed_keys[2] + pressed_keys[3];
+      if (previous_pressed_keys[i] == 12){
+        action = 'P';
+        detectedKey = 12 - (prev_key_sum - cur_key_sum);
+      } else {
+        action = 'R';
+        detectedKey = 12 - (cur_key_sum - prev_key_sum);
+      }
+    }
   }
 
+  // Format message
+  TX_Message[0] = action;
+  TX_Message[1] = detectedKey;
+  TX_Message[2] = my_octave;
+  TX_Message[3] = 0;
+  TX_Message[4] = 0;
+  TX_Message[5] = 0;
+  TX_Message[6] = 0;
+  TX_Message[7] = 0;
+
   // Send message if change has been detected
-  if(!no_changes_detected && !is_main){
+  // Only secondary keybords will send the key information
+  if(!no_changes_detected && !is_main && send_message){
     xQueueSend(msgOutQ, TX_Message, portMAX_DELAY);
   }
   
@@ -374,7 +378,7 @@ void scanKeysTask(void * pvParameters){
   static int8_t prev_val_joystick = 0;
   static int8_t cur_val_joystick = 0;
 
-  const TickType_t xFrequency = 20/portTICK_PERIOD_MS;
+  const TickType_t xFrequency = 15/portTICK_PERIOD_MS;
   TickType_t xLastWakeTime = xTaskGetTickCount();
 
   while (1){
@@ -441,38 +445,49 @@ void CAN_RX_ISR (void){
   uint8_t RX_Message_ISR[8];
   uint32_t IDR;
   CAN_RX(IDR, RX_Message_ISR);
-  if (IDR == 0x123){
-    xQueueSendFromISR(msgInQ, RX_Message_ISR, NULL);
-  } else {
-    xQueueSendFromISR(msgIn1Q, RX_Message_ISR, NULL);
-  } 
+  xQueueSendFromISR(msgInQ, RX_Message_ISR, NULL);
 }
 
 
-
+uint8_t RX_Message[8];
 void decodeTask(void * pvParameters){
-  uint8_t RX_Message[8];
+
   while(1){
     xQueueReceive(msgInQ, RX_Message, portMAX_DELAY);
-    played_notes[0] = RX_Message[0];
-    played_notes[1] = RX_Message[1];
-    played_notes[2] = RX_Message[2];
-    played_notes[3] = RX_Message[3];
-    played_octave = RX_Message[4];
-    octave_modifier = RX_Message[7];
-  }
-}
 
-void decodeTask1(void * pvParameters){
-  uint8_t RX_Message[8];
-  while(1){
-    xQueueReceive(msgIn1Q, RX_Message, portMAX_DELAY);
-    played_notes2[0] = RX_Message[0];
-    played_notes2[1] = RX_Message[1];
-    played_notes2[2] = RX_Message[2];
-    played_notes2[3] = RX_Message[3];
-    played_octave = RX_Message[4];
-    octave_modifier1 = RX_Message[7];
+    if (RX_Message[1] >= 0 && RX_Message[1] <= 12) {
+      if (RX_Message[0] == 80){
+        for (int8_t i = 0; i < 4; i++){
+          
+          if (played_notes_test[i] == 12){
+            played_notes_test[i] = RX_Message[1];
+            played_octave_test[i] = RX_Message[2];
+            break;
+          }
+          
+        }
+      }
+
+      if (RX_Message[0] == 82) {
+        for (int8_t i = 0; i < 4; i++){
+          
+          if (played_notes_test[i] == RX_Message[1] && played_octave_test[i] == RX_Message[2]){
+            for (int8_t j = i; j < 3; j++){
+            played_notes_test[j] = played_notes_test[j+1];
+            played_octave_test[j] = my_octave;
+            }
+            played_notes_test[3] = 12;
+            played_octave_test[3] = my_octave;
+          }
+          
+        }
+      }
+    } else {
+      for(int8_t i = 0; i < 4; i++){
+        played_notes_test[i] = 12;
+        played_octave_test[i] = my_octave;
+      }
+    }
   }
 }
 
@@ -481,7 +496,7 @@ void CAN_TX_Task(void * pvParameters){
   while (1) {
     xQueueReceive(msgOutQ, msgOut, portMAX_DELAY);
     xSemaphoreTake(CAN_TX_Semaphore, portMAX_DELAY);
-    CAN_TX(ID, msgOut);
+    CAN_TX(0x123, msgOut);
   }
 }
 
@@ -491,9 +506,6 @@ void CAN_TX_ISR (void) {
 
 // ---------------------------------- SAMPLE GENERATION AND PLAYBACK ---------------------------------------------
 void sampleISR (){
-  static uint64_t time_prev = 0;
-  time_prev = micros();
-  
   static int32_t phaseAcc = 0;
   static uint16_t counter = 0;
   static uint16_t lenCount = 0;
@@ -518,20 +530,12 @@ void sampleISR (){
   }
   for (int8_t i = 0; i < 4; i++){
     if(played_notes1[i] == 12){
-      played_notes1[i] = played_notes[index];
-      played_octave1[i] = my_octave-1+octave_modifier;
+      played_notes1[i] = played_notes_test[index];
+      played_octave1[i] = played_octave_test[index];
       index++;
     }
   }
-  index = 0;
-  for (int8_t i = 0; i < 4; i++){
-    if(played_notes1[i] == 12){
-      played_notes1[i] = played_notes2[index];
-      played_octave1[i] = my_octave-1+octave_modifier1;
-      index++;
-    }
-  }
-
+  
   // Oscillatiors
   if(played_notes1[0] != 12){
     phaseAcc = wave_lut[sine_lut_start_index[played_notes1[0]]+lenCount+wave_lut_offset[knob1_obj.count/2]];
@@ -618,7 +622,6 @@ void sampleISR (){
   // Volume knob scaling and speaker output
   Vout = Vout >> (8 - knob2_obj.count/4);
   analogWrite(OUTR_PIN, Vout + 130);
-  time_delta1 = micros() - time_prev;
 }
 
 // ------------------------------------ HANDSHAKE FUNCTION -----------------------------------------------
@@ -653,6 +656,7 @@ void displayUpdateTask(void * pvParameters){
 
   while(1){
     TickType_t xLastWakeTime = xTaskGetTickCount();
+    if (!knob2_toggle) {
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB08_tr);
     u8g2.setCursor(5,10);
@@ -675,7 +679,51 @@ void displayUpdateTask(void * pvParameters){
     u8g2.setCursor(115,10);
     u8g2.print(Notes[played_notes1[3]]);
     u8g2.sendBuffer();
+    } else {
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB08_tr);
+    u8g2.setCursor(5,10);
+    u8g2.print("Debug ");
+    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.setCursor(70,10);
+    u8g2.print((char)RX_Message[0]);
+    u8g2.setCursor(85,10);
+    u8g2.print(RX_Message[1]);
+    u8g2.setCursor(100,10);
+    u8g2.print(RX_Message[2]);
 
+    u8g2.setCursor(70,20);
+    u8g2.print(played_notes_test[0]);
+    u8g2.setCursor(85,20);
+    u8g2.print(played_notes_test[1]);
+    u8g2.setCursor(100,20);
+    u8g2.print(played_notes_test[2]);
+    u8g2.setCursor(115,20);
+    u8g2.print(played_notes_test[3]);
+
+    u8g2.setCursor(5,20);
+    u8g2.print(pressed_keys[0]);
+    u8g2.setCursor(20,20);
+    u8g2.print(pressed_keys[1]);
+    u8g2.setCursor(35,20);
+    u8g2.print(pressed_keys[2]);
+    u8g2.setCursor(50,20);
+    u8g2.print(pressed_keys[3]);
+
+    u8g2.setCursor(70,30);
+    u8g2.print(played_octave_test[0]);
+    u8g2.setCursor(85,30);
+    u8g2.print(played_octave_test[1]);
+    u8g2.setCursor(100,30);
+    u8g2.print(played_octave_test[2]);
+    u8g2.setCursor(115,30);
+    u8g2.print(played_octave_test[3]);
+
+    u8g2.setCursor(10,30);
+    u8g2.print(time);
+    u8g2.sendBuffer();
+    
+    }
     //Toggle LED
     digitalToggle(LED_BUILTIN);
   }
@@ -726,7 +774,7 @@ void setup() {
     "scanKeys", // Task name
     64, // Stack size in words
     NULL, // Parameter passed into the task
-    5, // Task priority
+    3, // Task priority
     &scanKeysHandle // Pointer to store the task handle
   );
 
@@ -738,20 +786,10 @@ void setup() {
     "decode", // Task name
     64, // Stack size in words
     NULL, // Parameter passed into the task
-    3, // Task priority
+    4, // Task priority
     &decodeHandle // Pointer to store the task handle
   );
 
-  // Decode Thread initialisation
-  TaskHandle_t decodeHandle1 = NULL;
-  xTaskCreate(
-    decodeTask1, // Function that implements the task
-    "decode1", // Task name
-    64, // Stack size in words
-    NULL, // Parameter passed into the task
-    4, // Task priority
-    &decodeHandle1 // Pointer to store the task handle
-  );
 
   // CAN Trnsmission Thread initialisation
   TaskHandle_t TX_Handle = NULL;
@@ -786,13 +824,12 @@ void setup() {
   CAN_Init(false);
   CAN_RegisterRX_ISR(CAN_RX_ISR);
   CAN_RegisterTX_ISR(CAN_TX_ISR);
-  setCANFilter();
+  setCANFilter(0x123,0x7ff);
   CAN_Start();
 
   // Initialise the FreeRTOS queues
-  msgInQ = xQueueCreate(36, 8);
-  msgIn1Q = xQueueCreate(36, 8);
-  msgOutQ = xQueueCreate(36, 8);
+  msgInQ = xQueueCreate(64, 8);
+  msgOutQ = xQueueCreate(64, 8);
   DelayQ = xQueueCreate(8192, sizeof(int16_t));
 
   // Start the tasks
