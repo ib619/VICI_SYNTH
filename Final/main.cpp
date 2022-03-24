@@ -8,6 +8,9 @@
   bool has_left = false;
   bool has_right = false;
 
+// Pagination
+  int8_t page = 0;
+
 //Pin definitions
   //Row select and enable
   const int RA0_PIN = D3;
@@ -191,7 +194,7 @@ int16_t knob3_state[] = {0, 1, 2, 3, 100, 101, 102, 103, 200, 201, 202, 203, 300
 
 // Knob objects initialisation
 Knob knob2_obj(knob2_state, 0, 32, 12);
-Knob knob3_obj(knob3_state, 2, 14, 3);
+Knob knob3_obj(knob3_state, 0, 16, 3);
 Knob knob0_obj(knob2_state, 2, 162, 12);
 Knob knob1_obj(knob3_state, 0, 8, 3);
 
@@ -413,22 +416,24 @@ void scanKeysTask(void * pvParameters){
     //Processing knob pressing
     cur_val_row6 = keyArray[6];
     cur_val_row5 = keyArray[5];
-    if (prev_val_row6 == 15 && cur_val_row6 == 14){
+    if ((prev_val_row6 == 15 && cur_val_row6 == 14) || (prev_val_row6 == 7 && cur_val_row6 == 6)){
       knob0_toggle = !knob0_toggle;
     }
-    if (prev_val_row6 == 15 && cur_val_row6 == 13){
+    if ((prev_val_row6 == 15 && cur_val_row6 == 13) || (prev_val_row6 == 7 && cur_val_row6 == 5)){
       knob1_toggle = !knob1_toggle;
     }
-    if (prev_val_row5 == 15 && cur_val_row5 == 14){
+    if ((prev_val_row5 == 15 && cur_val_row5 == 14) || (prev_val_row5 == 7 && cur_val_row5 == 6)){
       knob2_toggle = !knob2_toggle;
     }
-    if (prev_val_row5 == 15 && cur_val_row5 == 13){
+    if ((prev_val_row5 == 15 && cur_val_row5 == 13) || (prev_val_row5 == 7 && cur_val_row5 == 5)){
       knob3_toggle = !knob3_toggle;
+      page++;
+      if (page > 4) {page = 0;}
     }
 
     // Processing joystick pressing
     cur_val_joystick = keyArray[5];
-    if (prev_val_joystick == 15 && cur_val_joystick == 11){
+    if ((prev_val_joystick == 15 && cur_val_joystick == 11) || (prev_val_joystick == 7 && cur_val_joystick == 3)){
       joystick_toggle = !joystick_toggle;
     }
     xSemaphoreGive(keyArrayMutex);
@@ -641,6 +646,10 @@ void sampleISR (){
         else{state = 1;}
         break;
   }
+
+  // LFO limit cheching
+  if (phaseAcc_lfo > 1){phaseAcc_lfo = 1;}
+  if (phaseAcc_lfo < 0){phaseAcc_lfo = 0;}
   
   // Signal scaliing according to number of notes played
   float trem = float(phaseAcc)*phaseAcc_lfo;
@@ -734,41 +743,47 @@ void displayUpdateTask(void * pvParameters){
     u8g2.sendBuffer();
     } else {
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_ncenB08_tr);
-    u8g2.setCursor(5,10);
-    u8g2.print("Debug ");
     u8g2.setFont(u8g2_font_5x7_tr);
-    u8g2.setCursor(70,10);
-    u8g2.print((char)RX_Message[0]);
-    u8g2.setCursor(85,10);
-    u8g2.print(RX_Message[1]);
-    u8g2.setCursor(100,10);
-    u8g2.print(RX_Message[2]);
-
-    u8g2.setCursor(70,20);
-    u8g2.print(played_notes_test[0]);
-    u8g2.setCursor(85,20);
-    u8g2.print(played_notes_test[1]);
-    u8g2.setCursor(100,20);
-    u8g2.print(played_notes_test[2]);
-    u8g2.setCursor(115,20);
-    u8g2.print(played_notes_test[3]);
-
-    u8g2.setCursor(5,20);
-    u8g2.print(pressed_keys[0]);
-    u8g2.setCursor(20,20);
-    u8g2.print(pressed_keys[1]);
-    u8g2.setCursor(35,20);
-    u8g2.print(pressed_keys[2]);
-    u8g2.setCursor(50,20);
-    u8g2.print(pressed_keys[3]);
-
-    u8g2.setCursor(10,30);
-    u8g2.print("X: " + String(joystick_x_val));
-    u8g2.setCursor(70,30);
-    u8g2.print("Y: " + String(joystick_y_val));
+    u8g2.setCursor(5,10);
+    switch (page){
+      case 0:
+        u8g2.setCursor(5,10);
+        u8g2.print("Knob 1:");
+        u8g2.setCursor(5,20);
+        u8g2.print("Press to toggle delay");
+        u8g2.setCursor(5,30);
+        u8g2.print("Turn to change length");
+        break;
+      case 1:
+        u8g2.setCursor(5,10);
+        u8g2.print("Knob 2:");
+        u8g2.setCursor(5,20);
+        u8g2.print("Turn to change waveform");
+        break;
+      case 2:
+        u8g2.setCursor(5,10);
+        u8g2.print("Knob 3:");
+        u8g2.setCursor(5,20);
+        u8g2.print("Press for instructions");
+        u8g2.setCursor(5,30);
+        u8g2.print("Turn to change volume");
+        break;
+      case 3:
+        u8g2.setCursor(5,10);
+        u8g2.print("Knob 4:");
+        u8g2.setCursor(5,20);
+        u8g2.print("Turn to change octave");
+        break;
+      case 4:
+        u8g2.setCursor(5,10);
+        u8g2.print("Joystick:");
+        u8g2.setCursor(5,20);
+        u8g2.print("Press to toggle tremolo");
+        u8g2.setCursor(5,30);
+        u8g2.print("Move to change frequency");
+        break;
+    }
     u8g2.sendBuffer();
-    
     }
     //Toggle LED
     digitalToggle(LED_BUILTIN);
