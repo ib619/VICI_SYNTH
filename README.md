@@ -2,7 +2,7 @@
 
 
 
-## Core Functional Specifications
+### Core Functional Specifications
 <ol>
   <li>The synthesizer plays the appropriate musical tone using a sawtooth wave when a key is pressed</li>
   <li>There is no perceptible delay between pressing a key and playing the tone</li>
@@ -14,19 +14,13 @@
   <li>If the synthesiser is configured as a receiver, it plays a note or stops playing a note when it receives an appropriate message on the CAN bus</li>
   <li>CAN bus messages for playing a note are an 8-byte sequence {0x50,x,y,0,0,0,0,0}, where x is the octave number 0–8 and y is the note number as the number of semitones above the note C</li>
   <li>CAN bus messages for ending a note are an 8-byte sequence {0x52,x,y,0,0,0,0,0}, where x is the octave number 0–8 and y is the note number as the number of semitones above the note C. The values of x and y in a note end command are not ignored by the receiver, because polyphony is implemented as an advanced feature</li>
-  <li></li>
-  <li></li>
+
+### Non-functional Specifications 
+  <li>The system is implemented using interrupts and threads to achieve concurrent execution of tasks</li>
+  <li>All data and other resources that are accessed by multiple tasks are protected against errors caused by simultaneous access using mutexes and atomic access</li>
+  <li>The code is structured such that it is easy to understand and it is maintainable</li>
 </ol>
 
-
-
-9. CAN bus messages for playing a note shall be an 8-byte sequence {0x50,x,y,0,0,0,0,0}, where
-x is the octave number 0–8 and y is the note number as the number of semitones above the note
-C
-10. CAN bus messages for ending a note shall be an 8-byte sequence {0x52,x,y,0,0,0,0,0}, where
-x is the octave number 0–8 and y is the note number as the number of semitones above the
-note C. The values of x and y in a note end command shall be ignored by the receiver unless
-polyphony is implemented as an advanced feature
 
 
 
