@@ -133,6 +133,19 @@ The latency of the lowest priority task <code>displayUpdateTask</code> is <stron
 The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules.
 ### 1. Polyphony Up To 4 Keys
 ### 2. Variable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
+<table align="center">
+  <tr>
+      <th align=center>Type</th>
+      <th align=center>Waveform</th>
+      <th align=center>Comments</th>
+  </tr>
+ <tr>
+      <th align=center>Sine</th>
+      <th align=center><img src="/images/sine.png" alt="sine" width="400"/></th>
+      <th align=center>-</th>
+  </tr>
+</table>
+
 ### 3. Delay with Adjustable Period
 <p align="center">
 <img src="/images/delay.png" alt="delay" width="500"/>
