@@ -136,7 +136,7 @@ The aformentioned structure allowed us to minimise the use of blocking dependenc
 The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules.
 
 ### 1. Polyphony Up To 4 Keys
-### 2. Variable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
+### 2. Selectable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
 Waveform are stored in constant look up tables(LUTs). For each waveform the LUT contains the a complete cycle of each note in octave 4, sampled at 22kHz. This method of storing the waveforms allows to store any waveform imaginable, 5 of which are listed in the table below. 
 
 The desired waveform is displayed in the UI and can be selected by rotating knob 2. The table below showcases oscilloscope measurements for each of the possible waveforms.
