@@ -133,10 +133,10 @@ Sample generation interrupt combines the information into a third array, which i
 The aformentioned structure allowed us to minimise the use of blocking dependencies for data protection, thus minimising the risk of deadlock.
 
 ## Advanced Features
-The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules. Advanced features where implemented where: 
+The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules. Advanced features where implemented which: 
 
-•Demonstrates principles of real-time / concurrent programming
-•Makes better use of the microcontroller hardware to improve performance
+•Demonstrate principles of real-time / concurrent programming
+•Make better use of the microcontroller hardware to improve performance
 •Allow the group to collaborate effectively
 •Features are interesting and fun or have practical applications.
 
@@ -230,3 +230,7 @@ The system at its current state uses the second messaging format. The keyboard m
 The system would be configured as a receiver if it has either both or neither side attached on the startup. In case there is only one side attached, it will be configured as the sender. This way, the keyboard which is powered first will automatically become the receiver, and the ones attached afterwards will become the senders.
 
 Also, under the restriction of 3 keyboards for team, this handshake allows to connect and power all 3 keyboards simultaneously. In this case, the middle one will become the receiver and the sides become the senders.
+
+## AnalogTiming 
+
+
