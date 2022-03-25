@@ -136,6 +136,7 @@ The pictures below demonstrate the implementation of several advanced features. 
 ### 3. Delay with Adjustable Period
 ### 4. Tremolo with Joystick Control
 
+Tremolo
 
 
 ### 5. Octave Selection
@@ -144,6 +145,7 @@ The pictures below demonstrate the implementation of several advanced features. 
 ## User Interface
 ## Real Time System Architecture Decisions 
 
+
 Asynchronus vs Synchronus. more flexible and robust system.
 queue is better since
 A queue is a FIFO buffer for passing information between tasks
@@ -151,6 +153,8 @@ The buffer allows a mismatch in processing rates between writing task and readin
 A queue can be used to give a task more time and lower worst-case utilisation
 Queue allows critical instant analysis to consider average, not peak initiation interval
 Can also lower task priority even if initiations are not bursty
+
+## CAN Communication Decisions
 
 ```mermaid
   graph TD;
