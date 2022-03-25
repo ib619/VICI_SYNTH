@@ -108,6 +108,7 @@ The latency of the lowest priority task <code>displayUpdateTask</code> is <stron
 ### 5. Octave Selection
 ### 6. Keyboard Auto-Detect
 
+## User Interface
 
 ```mermaid
   graph TD;
