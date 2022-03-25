@@ -1,5 +1,22 @@
 # Team VICI Synthesizer
 
+- [Team VICI Synthesizer](#team-vici-synthesizer)
+  * [Core Functional Specifications](#core-functional-specifications)
+  * [Non-functional Specifications](#non-functional-specifications)
+  * [System Tasks](#system-tasks)
+  * [Critical Instant Analysis](#critical-instant-analysis)
+  * [Shared Data Structures](#shared-data-structures)
+  * [Inter-Task Blocking Dependencies](#inter-task-blocking-dependencies)
+  * [Advanced Features](#advanced-features)
+    + [1. Polyphony Up To 4 Keys](#1-polyphony-up-to-4-keys)
+    + [2. Sine, Triangle, Square, CML Waveforms](#2-sine--triangle--square--cml-waveforms)
+    + [3. Delay with Adjustable Period](#3-delay-with-adjustable-period)
+    + [4. Tremolo with Joystick Control](#4-tremolo-with-joystick-control)
+    + [5. Octave Selection](#5-octave-selection)
+    + [6. Keyboard Auto-Detect](#6-keyboard-auto-detect)
+  * [User Interface](#user-interface)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'></a></i></small>
 
 
 ## Core Functional Specifications
