@@ -205,11 +205,11 @@ This method has one disadvantage, at the highest notes there might be not enough
 ### Controls
 The system controls are listed below. Knobs are numbered from left to right.
 
-Knob 1 : Press to activate delay and rotate to change delay time <br>
-Knob 2 : Rotate to change waveform <br>
-Knob 3 : Press to switch to helper menu and rotate to change volume <br>
-Knob 4 : Rotate to change octaves and press to cycle helper menu pages <br>
-Joystick: Press to activate Tremolo and move to adjust Tremolo <br>
+**Knob 1 :** Press to activate delay and rotate to change delay time <br>
+**Knob 2 :** Rotate to change waveform <br>
+**Knob 3 :** Press to switch to helper menu and rotate to change volume <br>
+**Knob 4 :** Rotate to change octaves and press to cycle helper menu pages <br>
+**Joystick:** Press to activate Tremolo and move to adjust Tremolo <br>
 
 ### Main UI Screen
 This is the UI Screen that greets the user on start-up.
@@ -253,10 +253,12 @@ The system would be configured as a receiver if it has either both or neither si
 
 Also, under the restriction of 3 keyboards for team, this handshake allows to connect and power all 3 keyboards simultaneously. In this case, the middle one will become the receiver and the sides become the senders.
 
-## AnalogWrite Timing and other optimisations
+## AnalogWrite Timing and other 
 
 analogWrite and analogRead (used in the sampleISR and scanKeysTask respectively) represent 45% and 23% of the **maximium** exection time for their tasks. Each analogueWrite and analogRead takes around 10 μs and 94 μs respectively. This means that the maximium speeds these function are run is more than sufficient for a synth to produce music/audio frequencies in the audible spectrum.
 
 However, for systems with more strict time requirements it may be a problem, however there is a way around this. For example the AnalogWrite function has a delay due to the branching to decide if DAC or PWM is to be used, however on some pins both operations are completed. AnalogWrite first looks up the DAC address for a given pin by calling get_dac_channel(), secondly if uninitialised, HAL_DAC_Init() and HAL_DAC_ConfigChannel() are called.
 
 The first operation can be hardcoded and the second operation can be completed on startup. Finally, HAL_DAC_SetValue() and HAL_DAC_Start() can be used in the ISR function instead to write new values and update the output. This should reduce the maximium execution time of the analogWrite operation and hence the ISR.
+
+
