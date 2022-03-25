@@ -198,6 +198,10 @@ This effect was acheived using a comb filter.
 <img src="/images/Comb.png" alt="Comb Filter" width="500"/>
 </p>
 
+A counter and a FreeRTOS queue was used to achieve the delay inside comb filter. The process is going through several steps. If the delay is toggled, the queue would start accepting samples untill a certain number of samples is accumulated, then the delayed sample is read from queue, scaled and combined with the current sample, fed back to the queue to achieve feedback and outputed to the speaker.
+
+When the delay is disabled the counter is reset and the queue is emptied one sample per interrupt to avoid overstressing the interrupt service routine.
+
 
 ### 4. Tremolo with Joystick Control
 Tremolo is a form of Amplitude Modulation where the gain of an audio signal is changed at a very slow rate, often at a frequency below the range of hearing (approximately 20 Hz) which creates a change in volume. This effect is commonly used to alter the sound of organs or electric guitar and hence it has many practical applications.
