@@ -138,7 +138,7 @@ All the data is generated inside the key scanning task. If the keyboard is confi
 Received key press information is decoded into separate volatile array.
 Sample generation interrupt combines the information into a third array, which is only accessed in the display updating task, achieving protected read/write access.
 
-The aformentioned structure allowed us to minimise the use of blocking dependencies for data protection, thus minimising the risk of deadlock.
+The aformentioned structure allowed minimal use of blocking dependencies for data protection, thus minimising the risk of deadlock.
 
 ## Advanced Features
 The pictures below demonstrate the implementation of several advanced features. All of the waveforms presented here come from oscilloscope measurements on our synthesizer modules.
