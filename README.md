@@ -39,17 +39,6 @@
 </ol>
 
 
-<li>All volatile data and resources are protected by mutex for mutually-exclusive access and atomic load operations. The list of mutexes used to access different variables are shown below</li>
-
-```Python
-1
-2
-3
-4
-5
-```
-
-
 ## System Tasks
 The table below lists all tasks performed by the system, their method of implementation (thread or interrupt), their theoretical minimum initiation interval and measured maximum execution time, in the order of their priority.
 <table align="center">
@@ -221,11 +210,7 @@ Queue allows critical instant analysis to consider average, not peak initiation 
 Can also lower task priority even if initiations are not bursty
 
 ## CAN Communication Decisions
+The two CAN messaging formats were explored:
 
-```mermaid
-  graph TD;
-      A-->B;
-      A-->C;
-      B-->D;
-      C-->D;
-```
+### 1. 8-byte sequence {note1, note2, note3, note4, octave, 0, 0, 0}
+This message format allow passing multiple note information in one message, which makes decoding easy and less time consuming. The downside of this format is that it does not scale well with multiple keyboards.
