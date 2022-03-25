@@ -199,17 +199,15 @@ The joystick position is mapped using an X and Y value which range roughly from 
 ### Controls
 The system controls are listed below. Knobs are numbered from left to right.
 
-Knob 1 : Press to activate delay and rotate to change delay time
-
-Knob 2 : Rotate to change waveform
-
-Knob 3 : Press to switch to helper menu and rotate to change volume
-
-Knob 4 : Rotate to change octaves and press to cycle helper menu pages
-
-Joystick: Press to activate Tremolo and move to adjust Tremolo
+Knob 1 : Press to activate delay and rotate to change delay time <br>
+Knob 2 : Rotate to change waveform <br>
+Knob 3 : Press to switch to helper menu and rotate to change volume <br>
+Knob 4 : Rotate to change octaves and press to cycle helper menu pages <br>
+Joystick: Press to activate Tremolo and move to adjust Tremolo <br>
 
 ### Main UI Screen
+This is the UI Screen that greets the user on start-up.
+
 <p align="center">
 <img src="/images/UI.jpg" alt="UI" width="400"/>
 </p>
