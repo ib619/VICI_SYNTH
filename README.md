@@ -1,22 +1,31 @@
 # Team VICI Synthesizer
 
 - [Team VICI Synthesizer](#team-vici-synthesizer)
+  * [Demo Video](#demo-video)
   * [Core Functional Specifications](#core-functional-specifications)
   * [Non-functional Specifications](#non-functional-specifications)
   * [System Tasks](#system-tasks)
   * [Critical Instant Analysis](#critical-instant-analysis)
-  * [Shared Data Structures](#shared-data-structures)
-  * [Inter-Task Blocking Dependencies](#inter-task-blocking-dependencies)
+  * [Shared Data Structures and Blocking Dependencies](#shared-data-structures-and-blocking-dependencies)
   * [Advanced Features](#advanced-features)
     + [1. Polyphony Up To 4 Keys](#1-polyphony-up-to-4-keys)
-    + [2. Sine, Triangle, Square, CML Waveforms](#2-sine--triangle--square--cml-waveforms)
+    + [2. Selectable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms](#2-selectable-waveforms--sine--triangle--square--sawtooth--cml-waveforms)
     + [3. Delay with Adjustable Period](#3-delay-with-adjustable-period)
     + [4. Tremolo with Joystick Control](#4-tremolo-with-joystick-control)
     + [5. Octave Selection](#5-octave-selection)
-    + [6. Keyboard Auto-Detect](#6-keyboard-auto-detect)
   * [User Interface](#user-interface)
+    + [Controls](#controls)
+    + [Main UI Screen](#main-ui-screen)
+    + [Helper Menu Pages](#helper-menu-pages)
+  * [Real Time System Architecture Decisions](#real-time-system-architecture-decisions)
+  * [CAN Communication Decisions](#can-communication-decisions)
+    + [1. 8-byte sequence: {note1, note2, note3, note4, octave, 0, 0, 0}](#1-8-byte-sequence---note1--note2--note3--note4--octave--0--0--0-)
+    + [2. 8-byte sequence: {P/R, note, octave, 0, 0, 0, 0, 0}](#2-8-byte-sequence---p-r--note--octave--0--0--0--0--0-)
+    + [Handshake](#handshake)
+  * [AnalogWrite Timing and other](#analogwrite-timing-and-other)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'></a></i></small>
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 ## Demo Video
 The demo video can be watched here: https://web.microsoftstream.com/video/c69d4849-087c-4d3b-aa78-92f8786572f9
