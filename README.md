@@ -137,7 +137,9 @@ The pictures below demonstrate the implementation of several advanced features. 
 
 ### 1. Polyphony Up To 4 Keys
 ### 2. Selectable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
-Waveform are stored in constant look up tables(LUTs). For each waveform the LUT contains the a complete cycle of each note in octave 4, sampled at 22kHz. This method of storing the waveforms allows to store any waveform imaginable, 5 of which are listed in the table below. 
+Waveform are stored in constant look up tables(LUTs). For each waveform the LUT contains the a complete cycle of each note in octave 4, sampled at 22kHz. This method of storing the waveforms allows to store any waveform imaginable, 5 of which are listed in the table below.
+
+The one disadvantage of this approach is that frequencies are discrete, therefore implementation of any frequency modulating effects such as vibrato is very difficult. On the other hand, array lookup always takes the same time regardless of size, hence this can support many waveforms and still be computationally eficcient.
 
 The desired waveform is displayed in the UI and can be selected by rotating knob 2. The table below showcases oscilloscope measurements for each of the possible waveforms.
 <table align="center">
@@ -190,6 +192,14 @@ The joystick position is mapped using an X and Y value which range roughly from 
 </p>
 
 ### 5. Octave Selection
+Considering that the samples are coming from the LUT where they are stored only for 4th octave, the method of switching octaves is as follows:
+<ul>
+<li>If the 4th octave is chosen, the samples are just played back as they were recorded.</li>
+<li>If the octave chosen is below 4th, each sample would be repeated a number of times to achieve the desired frequency. For example, for the 3rd octave, each sample is played twice</li>
+<li>If the octave chosen is above 4th, some of the samples will be skipped, producing higher pitch. For example, for the 5th octave, every second sample will be skipped.</li>
+
+This method has one disadvantage, at the highest notes there might be not enough samples to accurately represent the waveform. This issue can be solved by increacing the sampling frequency of the device.
+</ul>
 
 ## User Interface
 ### Controls
