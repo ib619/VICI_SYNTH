@@ -193,7 +193,6 @@ The joystick position is mapped using an X and Y value which range roughly from 
 </p>
 
 ### 5. Octave Selection
-### 6. Keyboard Auto-Detect
 
 ## User Interface
 knob0 :
