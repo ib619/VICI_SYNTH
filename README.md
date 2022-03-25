@@ -38,6 +38,18 @@
   <li>The code is structured such that it is easy to understand and it is maintainable</li>
 </ol>
 
+
+<li>All volatile data and resources are protected by mutex for mutually-exclusive access and atomic load operations. The list of mutexes used to access different variables are shown below</li>
+
+```Python
+1
+2
+3
+4
+5
+```
+
+
 ## System Tasks
 The table below lists all tasks performed by the system, their method of implementation (thread or interrupt), their theoretical minimum initiation interval and measured maximum execution time, in the order of their priority.
 <table align="center">
