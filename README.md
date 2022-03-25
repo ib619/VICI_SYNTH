@@ -277,7 +277,7 @@ Also, under the restriction of 3 keyboards for team, this handshake allows to co
 
 ## Other
 
-### AnalogWrite Timing and other 
+### AnalogWrite and analogRead execution time
 
 analogWrite and analogRead (used in the sampleISR and scanKeysTask respectively) represent 45% and 23% of the **maximium** exection time for their tasks. Each analogueWrite and analogRead takes around 10 μs and 94 μs respectively. This means that the maximium speeds these function can be run is more than sufficient for a synth to produce music/audio frequencies in the audible spectrum.
 
