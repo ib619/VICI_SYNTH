@@ -133,12 +133,7 @@ Sample generation interrupt combines the information into a third array, which i
 The aformentioned structure allowed us to minimise the use of blocking dependencies for data protection, thus minimising the risk of deadlock.
 
 ## Advanced Features
-The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules. Advanced features where implemented which: 
-
-•Demonstrate principles of real-time / concurrent programming
-•Make better use of the microcontroller hardware to improve performance
-•Allow the group to collaborate effectively
-•Features are interesting and fun or have practical applications.
+The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules.
 
 ### 1. Polyphony Up To 4 Keys
 ### 2. Variable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
