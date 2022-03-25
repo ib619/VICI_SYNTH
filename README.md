@@ -171,7 +171,7 @@ The desired waveform is displayed in the UI and can be selected by rotating knob
  <tr>
       <th align=center>Square</th>
       <th align=center><img src="/images/square.png" alt="square" width="400"/></th>
-      <th align=center>Note: C3<br>Measured Frequency: 131.71 Hz<br>Frequency response of the filter heavily attenuates higher frequencies</th>
+      <th align=center>Note: C3<br>Measured Frequency: 131.71 Hz<br>Frequency response of the speaker heavily attenuates higher frequencies</th>
   </tr>
  <tr>
       <th align=center>Sawtooth</th>
