@@ -188,6 +188,7 @@ The desired waveform is displayed in the UI and can be selected by rotating knob
 </table>
 
 ### 3. Delay with Adjustable Period
+The delay effect can be enabled or disabled by pressing knob 1. The delay period is displayed in the UI and it can be adjusted by rotating knob 1. The waveform below shows the delay effect for 2 consecutive key presses.
 <p align="center">
 <img src="/images/delay.png" alt="delay" width="500"/>
 </p>
