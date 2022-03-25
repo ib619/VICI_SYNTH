@@ -253,7 +253,7 @@ Two systems where explored -
 
 **System 1 :** Synchronus system where sample generation is run on every sample interrupt
 
-**System 2 :** Asynchronus system where samples are written to a buffer and an interrupt reads values to the output where reading has a sample frequency of 22k Hz, faster than writing.
+**System 2 :** Asynchronus system where samples are written to a buffer and an interrupt reads values to the output where reading has a sample frequency of 22k Hz, faster than writing
 
 System 2 has many advantages as it reduced the priority of the sample computation code and samples do not need to be produced as exactly 22k Hz, they can be produced in bursts and other tasks can fit around this which allows for a more flexible programme. Using this system allows more flexibility in giving certain tasks more time and to lower worst case utilisation, consider average and not peak initiation interval for critical time analysis and even lower task priority.
 
