@@ -177,12 +177,17 @@ The desired waveform is displayed in the UI and can be selected by rotating knob
 </table>
 
 ### 3. Delay with Adjustable Period
+The delay effect can be enabled or disabled by pressing knob 1. The delay period is displayed in the UI and it can be adjusted by rotating knob 1. The waveform below shows the delay effect for 2 consecutive key presses.
 <p align="center">
 <img src="/images/delay.png" alt="delay" width="500"/>
 </p>
 
 ### 4. Tremolo with Joystick Control
-Tremolo
+Tremolo is a form of Amplitude Modulation where the gain of an audio signal is changed at a very slow rate, often at a frequency below the range of hearing (approximately 20 Hz) which creates a change in volume. This effect is commonly used to alter the sound of organs or electric guitar and hence it has many practical applications.
+
+This has been implemented using a Low frequency oscillator (LFO) which outputs the samples of a traingular waveform with amplitudes ranging from 0-1. Given that the sampling frequency (fs) is fixed at 22kHz, the desired frequency (f) of the waveform created by the LFO achieved by altering the step size (S) where S = 1/(2xf) x fs. The phase accumaltor for this is multiplied with the phase accumalator for the notes pressed to achieve the tremolo effect.
+
+The joystick position is mapped using an X and Y value which range roughly from 100-900. The addition of these values is used as the number of steps(N) of the waveform which changes the step size (S), S = 1/N, and hence frequency. This value is scaled to ensure that the movement of the joystick has a significantly recognisable Tremolo effect.
 <p align="center">
 <img src="/images/tremolo.png" alt="tremolo" width="500"/>
 </p>
