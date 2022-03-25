@@ -198,7 +198,7 @@ Tremolo is a form of Amplitude Modulation where the gain of an audio signal is c
 
 This has been implemented using a Low frequency oscillator (LFO) which outputs the samples of a traingular waveform with amplitudes ranging from 0-1. Given that the sampling frequency (fs) is fixed at 22kHz, the desired frequency (f) of the waveform created by the LFO achieved by altering the step size (S) where S = 1/(2xf) x fs. The phase accumaltor for this is multiplied with the phase accumalator for the notes pressed to achieve the tremolo effect.
 
-The joystick position is mapped using an X and Y value which range roughly from 100-900. The addition of these values is used as the number of steps(N) of the waveform which changes the step size (S), S = 1/N, and hence frequency. This value is scaled to ensure that the movement of the joystick has a signigicantely recognisable Tremolo effect.
+The joystick position is mapped using an X and Y value which range roughly from 100-900. The addition of these values is used as the number of steps(N) of the waveform which changes the step size (S), S = 1/N, and hence frequency. This value is scaled to ensure that the movement of the joystick has a significantly recognisable Tremolo effect.
 <p align="center">
 <img src="/images/tremolo.png" alt="tremolo" width="500"/>
 </p>
