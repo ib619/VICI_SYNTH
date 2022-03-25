@@ -217,5 +217,15 @@ Can also lower task priority even if initiations are not bursty
 ## CAN Communication Decisions
 The two CAN messaging formats were explored:
 
-### 1. 8-byte sequence {note1, note2, note3, note4, octave, 0, 0, 0}
-This message format allow passing multiple note information in one message, which makes decoding easy and less time consuming. The downside of this format is that it does not scale well with multiple keyboards.
+### 1. 8-byte sequence: {note1, note2, note3, note4, octave, 0, 0, 0}
+This message format allow passing multiple note information in one message, which makes decoding easy and less time consuming. The downside of this format is that it does not scale well with multiple keyboards, requiring each keyboard to use its own can ID.
+
+### 2. 8-byte sequence: {P/R, note, octave, 0, 0, 0, 0, 0}
+This message format has an advantage of supporting multiple keyboards without overcomplicating the message id recognition. However it adds more complexity to the decode logic and increaces the overall amount of messages going through the system.
+
+The system at its current state uses the second messaging format. The keyboard module configures as a sender/receiver in the setup via the handshake function.
+
+### Handshake
+The system would be configured as a receiver if it has either both or neither side attached on the startup. In case there is only one side attached, it will be configured as the sender. This way, the keyboard which is powered first will automatically become the receiver, and the ones attached afterwards will become the senders.
+
+Also, under the restriction of 3 keyboards for team, this handshake allows to connect and power all 3 keyboards simultaneously. In this case, the middle one will become the receiver and the sides become the senders.
