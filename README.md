@@ -148,8 +148,28 @@ The pictures below demonstrate the implementation of several advanced features. 
  <tr>
       <th align=center>Sine</th>
       <th align=center><img src="/images/sine.png" alt="sine" width="400"/></th>
-      <th align=center>-</th>
+      <th align=center>Note: C3</th>
   </tr>
+  <tr>
+      <th align=center>Triangle</th>
+      <th align=center><img src="/images/triangle.png" alt="triangle" width="400"/></th>
+      <th align=center>Note: C3<br>Parasitic capacitance affects the waveform</th>
+  </tr>
+ <tr>
+      <th align=center>Square</th>
+      <th align=center><img src="/images/square.png" alt="square" width="400"/></th>
+      <th align=center>Note: C3<br>Frequency response of the filter heavily attenuates higher frequencies</th>
+  </tr>
+ <tr>
+      <th align=center>Sawtooth</th>
+      <th align=center><img src="/images/saw.png" alt="saw" width="400"/></th>
+      <th align=center>Note: C3<br>Parasitic capacitance affects the wave significantly</th>
+  </tr>
+ <tr>
+      <th align=center>CML</th>
+      <th align=center><img src="/images/CML.png" alt="CML" width="400"/></th>
+      <th align=center>Note: C3</th>
+ </tr>
 </table>
 
 ### 3. Delay with Adjustable Period
