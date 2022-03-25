@@ -142,7 +142,7 @@ The pictures below demonstrate the implementation of several advanced features. 
 ### 6. Keyboard Auto-Detect
 
 ## User Interface
-## system architecture decisions 
+## Real Time System Architecture Decisions 
 
 Asynchronus vs Synchronus. more flexible and robust system.
 queue is better since
