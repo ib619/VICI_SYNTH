@@ -224,6 +224,10 @@ Access by pressing Knob 3 and change page by pressing Knob 4.
 ## Real Time System Architecture Decisions 
 
 
+-System 1: Synchronus programme which runs sample generation on every sample interrupt
+-System 2: Asynchronus programme which puts samples into a buffer and are then read to output
+
+- 
 Asynchronus vs Synchronus. more flexible and robust system.
 queue is better since
 A queue is a FIFO buffer for passing information between tasks
