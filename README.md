@@ -78,7 +78,7 @@ The table below lists all tasks performed by the system, their method of impleme
         <td align=center><code>CAN_TX_Task</td>
         <td align=center>Thread</td>
         <th align=center>60 ms</th>
-        <th align=center>32.4 ms</th>
+        <th align=center>7.2 ms</th>
       </tr>
       <tr>
         <td align=center>5</td>
@@ -91,7 +91,10 @@ The table below lists all tasks performed by the system, their method of impleme
 
 ## Critical Instant Analysis
 Using the times in the table above and the latency formula: 
-
+<p align="center">
+<img src="/images/latency.png" alt="latency" width="250"/>
+</p>
+The latency of the lowest priority task <code>displayUpdateTask</code> is <strong>85.05 ms</strong>, which is less than the initiation interval of <strong>100 ms</strong> for the task. We can then say that the system has passed the critical instant analysis and that the given schedule works. Consequently, the total CPU utilization is <strong>85.05 %</strong>.
 
 ## Shared Data Structures
 
