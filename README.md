@@ -142,6 +142,8 @@ The pictures below demonstrate the implementation of several advanced features. 
 
 ### 1. Polyphony Up To 4 Keys
 ### 2. Variable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
+Waveform are stored in constant look up tables(LUTs). For each waveform the LUT contains the a complete cycle of each note in octave 4, sampled at 22kHz. This method of storing the waveforms allows to store any waveform imaginable, 5 of which are listed in the table below. 
+
 The desired waveform is displayed in the UI and can be selected by rotating knob 2. The table below showcases oscilloscope measurements for each of the possible waveforms.
 <table align="center">
   <tr>
@@ -195,38 +197,16 @@ The joystick position is mapped using an X and Y value which range roughly from 
 ### 5. Octave Selection
 
 ## User Interface
-### Controls
-The system controls are listed below. Knobs are numbered from left to right.
-
-Knob 1 : Press to activate delay and rotate to change delay time <br>
-Knob 2 : Rotate to change waveform <br>
-Knob 3 : Press to switch to helper menu and rotate to change volume <br>
-Knob 4 : Rotate to change octaves and press to cycle helper menu pages <br>
-Joystick: Press to activate Tremolo and move to adjust Tremolo <br>
-
-### Main UI Screen
-This is the UI Screen that greets the user on start-up.
-
-<p align="center">
-<img src="/images/UI.jpg" alt="UI" width="400"/>
-</p>
-
-### Helper Menu Pages
-Access by pressing Knob 3 and change page by pressing Knob 4.
-
-<p align="center">
-<img src="/images/help_knob1.jpg" alt="help_knob1" width="400"/> <img src="/images/help_knob2.jpg" alt="help_knob2" width="400"/> <br>
-<img src="/images/help_knob3.jpg" alt="help_knob3" width="400"/> <img src="/images/help_knob4.jpg" alt="help_knob4" width="400"/> <br>
-<img src="/images/help_joy.jpg" alt="help_joy" width="400"/>
-</p>
+knob0 :
+knob1 : Press to activate delay and rotate to change delay time
+knob2 : 
+knob3 : Press to switch to helper menu
+knob4 : Rotate to change octaves
+Joystick: Press to activate Tremolo and 
 
 ## Real Time System Architecture Decisions 
 
 
--System 1: Synchronus programme which runs sample generation on every sample interrupt
--System 2: Asynchronus programme which puts samples into a buffer and are then read to output
-
-- 
 Asynchronus vs Synchronus. more flexible and robust system.
 queue is better since
 A queue is a FIFO buffer for passing information between tasks
