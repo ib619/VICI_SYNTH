@@ -139,7 +139,7 @@ The pictures below demonstrate the implementation of several advanced features. 
 
 ### 1. Polyphony Up To 4 Keys
 ### 2. Variable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
-The desired waveform is displayed by the UI and can be selected by rotating knob 2. The table below showcases oscilloscope measurements for each of the possible waveforms.
+The desired waveform is displayed in the UI and can be selected by rotating knob 2. The table below showcases oscilloscope measurements for each of the possible waveforms.
 <table align="center">
   <tr>
       <th align=center>Type</th>
@@ -149,27 +149,27 @@ The desired waveform is displayed by the UI and can be selected by rotating knob
  <tr>
       <th align=center>Sine</th>
       <th align=center><img src="/images/sine.png" alt="sine" width="400"/></th>
-      <th align=center>Note: C3</th>
+      <th align=center>Note: C3<br>Measured Frequency: 129.29 Hz</th>
   </tr>
   <tr>
       <th align=center>Triangle</th>
       <th align=center><img src="/images/triangle.png" alt="triangle" width="400"/></th>
-      <th align=center>Note: C3<br>Parasitic capacitance affects the waveform</th>
+      <th align=center>Note: C3<br>Measured Frequency: 129.60 Hz<br>Parasitic capacitance affects the waveform</th>
   </tr>
  <tr>
       <th align=center>Square</th>
       <th align=center><img src="/images/square.png" alt="square" width="400"/></th>
-      <th align=center>Note: C3<br>Frequency response of the filter heavily attenuates higher frequencies</th>
+      <th align=center>Note: C3<br>Measured Frequency: 131.71 Hz<br>Frequency response of the filter heavily attenuates higher frequencies</th>
   </tr>
  <tr>
       <th align=center>Sawtooth</th>
       <th align=center><img src="/images/saw.png" alt="saw" width="400"/></th>
-      <th align=center>Note: C3<br>Parasitic capacitance affects the wave significantly</th>
+      <th align=center>Note: C3<br>Measured Frequency: 129.35 Hz<br>Parasitic capacitance affects the wave significantly</th>
   </tr>
  <tr>
       <th align=center>CML</th>
       <th align=center><img src="/images/CML.png" alt="CML" width="400"/></th>
-      <th align=center>Note: C3</th>
+      <th align=center>Note: C3<br>Measured Frequency: 129.27 Hz</th>
  </tr>
 </table>
 
