@@ -24,9 +24,6 @@
     + [Handshake](#handshake)
   * [AnalogWrite Timing and other](#analogwrite-timing-and-other)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
-
 ## Demo Video
 The demo video can be watched here: https://web.microsoftstream.com/video/c69d4849-087c-4d3b-aa78-92f8786572f9
 
