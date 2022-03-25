@@ -222,7 +222,7 @@ The two CAN messaging formats were explored:
 This message format allow passing multiple note information in one message, which makes decoding easy and less time consuming. The downside of this format is that it does not scale well with multiple keyboards, requiring each keyboard to use its own can ID.
 
 ### 2. 8-byte sequence: {P/R, note, octave, 0, 0, 0, 0, 0}
-This message format has an advantage of supporting multiple keyboards without overcomplicating the message id recognition. However it adds more complexity to the decode logic and increaces the overall amount of messages going through the system.
+This message format has an advantage of supporting multiple keyboards without overcomplicating the message id recognition. However it adds more complexity to the decode logic and increaces the overall amount of messages going through the system. This method requires a higher communication bandwidth.
 
 The system at its current state uses the second messaging format. The keyboard module configures as a sender/receiver in the setup via the handshake function.
 
