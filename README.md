@@ -125,9 +125,23 @@ Using the times in the table above and the latency formula:
 </p>
 The latency of the lowest priority task <code>displayUpdateTask</code> is <strong>85.05 ms</strong>, which is less than the initiation interval of <strong>100 ms</strong> for the task. We can then say that the system has passed the critical instant analysis and that the given schedule works. Consequently, the total CPU utilization is <strong>85.05 %</strong>.
 
-## Shared Data Structures
+## Shared Data Structures and Blocking Dependencies
+The mechanism for sharing data between different tasks and interrupts follows the publisher/subscriber pattern. This means that for each data structure shared, only one task is responsible for updating the data while the other tasks are read only.
 
-## Inter-Task Blocking Dependencies
+There are 4 major structural blocks of the code: 
+<ol>
+<li>Keyboard, Knob and Joystick scanning</li>
+<li>CAN transmission and reception</li>
+<li>Sample generation and playback</li>
+<li>Display update</li>
+</ol>
+
+All the data is generated inside the key scanning task. If the keyboard is configured as a sender, the key press information is stored in a volatile array and passed to the CAN transmission via freeRTOS queue. On the other hand if the keyboard is configured as a receiver, the data will only be stored but not transmitted.
+
+Received key press information is decoded into separate volatile array.
+Sample generation interrupt combines the information into a third array, which is only accessed in the display updating task, achieving protected read/write access.
+
+The aformentioned structure allowed us to minimise the use of blocking dependencies for data protection, thus minimising the risk of deadlock.
 
 ## Advanced Features
 The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules.
