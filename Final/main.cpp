@@ -10,6 +10,7 @@
 
 // Pagination
   int8_t page = 0;
+  uint16_t c = 0;
 
 //Pin definitions
   //Row select and enable
@@ -328,28 +329,26 @@ void decodeMultipleKeys(const int8_t w0, const int8_t w1, const int8_t w2){
 
   
   // Detect changes
-  bool no_changes_detected = true;
   int8_t detectedKey = 0;
   bool send_message = true;
   char action = 'N';
   for (int8_t i = 0; i < 4; i++){
-    no_changes_detected = no_changes_detected && (pressed_keys[i] == previous_pressed_keys[i]);
     if (pressed_keys[i] != previous_pressed_keys[i]) {
       int16_t prev_key_sum = previous_pressed_keys[0] + previous_pressed_keys[1] + previous_pressed_keys[2] + previous_pressed_keys[3];
       int16_t cur_key_sum = pressed_keys[0] + pressed_keys[1] + pressed_keys[2] + pressed_keys[3];
-      if (previous_pressed_keys[i] == 12 && !is_main){
+      if (previous_pressed_keys[i] == 12){
         if ((prev_key_sum - cur_key_sum) > 12) {
           for (int8_t i = 0; i < 4; i++){
             if(previous_pressed_keys[i] != pressed_keys[i]){
               TX_Message_key[0] = 'P';
               TX_Message_key[1] = pressed_keys[i];
-              xQueueSend(keyQ, TX_Message_key, portMAX_DELAY);
+              if (!is_main){xQueueSend(keyQ, TX_Message_key, portMAX_DELAY); c++;}
             }
           }
         } else {
           TX_Message_key[0] = 'P';
           TX_Message_key[1] = 12 - (prev_key_sum - cur_key_sum);
-          xQueueSend(keyQ, TX_Message_key, portMAX_DELAY);
+          if (!is_main) {xQueueSend(keyQ, TX_Message_key, portMAX_DELAY); c++;}
         }
       } else {
         if ((cur_key_sum - prev_key_sum) > 12) {
@@ -357,13 +356,13 @@ void decodeMultipleKeys(const int8_t w0, const int8_t w1, const int8_t w2){
             if (previous_pressed_keys[i] != pressed_keys[i]){
               TX_Message_key[0] = 'R';
               TX_Message_key[1] = previous_pressed_keys[i];
-              xQueueSend(keyQ, TX_Message_key, portMAX_DELAY);
+              if (!is_main) {xQueueSend(keyQ, TX_Message_key, portMAX_DELAY); c++;}
             }
           }
         } else {
           TX_Message_key[0] = 'R';
           TX_Message_key[1] = 12 - (cur_key_sum - prev_key_sum);
-          xQueueSend(keyQ, TX_Message_key, portMAX_DELAY);
+          if (!is_main) {xQueueSend(keyQ, TX_Message_key, portMAX_DELAY); c++;}
         }
       }
     }
@@ -717,7 +716,7 @@ void displayUpdateTask(void * pvParameters){
   TickType_t xLastWakeTime = xTaskGetTickCount();
 
   while(1){
-    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
     if (!knob2_toggle) {
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB08_tr);
@@ -911,4 +910,3 @@ void setup() {
 void loop() {
  // Empty loop
 }
-
