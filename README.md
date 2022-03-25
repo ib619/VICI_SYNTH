@@ -167,6 +167,13 @@ Tremolo
 ### 6. Keyboard Auto-Detect
 
 ## User Interface
+knob0 :
+knob1 : Press to activate delay and rotate to change delay time
+knob2 : 
+knob3 : Press to switch to helper menu
+knob4 : Rotate to change octaves
+Joystick: Press to activate Tremolo and 
+
 ## Real Time System Architecture Decisions 
 
 
