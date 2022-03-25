@@ -139,6 +139,7 @@ The pictures below demonstrate the implementation of several advanced features. 
 
 ### 1. Polyphony Up To 4 Keys
 ### 2. Variable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
+The desired waveform is displayed by the UI and can be selected by rotating knob 2. The table below showcases oscilloscope measurements for each of the possible waveforms.
 <table align="center">
   <tr>
       <th align=center>Type</th>
