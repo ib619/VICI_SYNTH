@@ -130,6 +130,7 @@ The latency of the lowest priority task <code>displayUpdateTask</code> is <stron
 ## Inter-Task Blocking Dependencies
 
 ## Advanced Features
+The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules.
 ### 1. Polyphony Up To 4 Keys
 ### 2. Sine, Triangle, Square, CML Waveforms
 ### 3. Delay with Adjustable Period
