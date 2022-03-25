@@ -33,56 +33,56 @@ The table below lists all tasks performed by the system, their method of impleme
       </tr>
       <tr>
         <td align=center>-</td>
-        <td align=center>sampleISR</td>
+        <td align=center><code>sampleISR</code></td>
         <td align=center>Interrupt</td>
         <th align=center>45.5 &mu;s</th>
         <th align=center>22 &mu;s</th>
       </tr>
       <tr>   
         <td align=center>-</td>
-        <td align=center>CAN_RX_ISR</td>
+        <td align=center><code>CAN_RX_ISR</code></td>
         <td align=center>Interrupt</td>
         <th align=center>0.7 ms</th>
         <th align=center>3 &mu;s</th>
       </tr>
       <tr>
         <td align=center>-</td>
-        <td align=center>CAN_TX_ISR</td>
+        <td align=center><code>CAN_TX_ISR</code></td>
         <td align=center>Interrupt</td>
         <th align=center>0.7 ms</th>
         <th align=center>3 &mu;s</th>
       </tr>
       <tr>
         <td align=center>1</td>
-        <td align=center>scanKeysTask</td>
+        <td align=center><code>scanKeysTask</code></td>
         <td align=center>Thread</td>
         <th align=center>20 ms</th>
         <th align=center>405 &mu;s</th>
       </tr>
       <tr>
         <td align=center>2</td>
-        <td align=center>decodeTask</td>
+        <td align=center><code>decodeTask</code></td>
         <td align=center>Thread</td>
         <th align=center>25.2 ms</th>
-        <th align=center>10 &mu;s</th>
+        <th align=center>360 &mu;s</th>
       </tr>
       <tr>
         <td align=center>3</td>
-        <td align=center>CAN_TX_KEY_Task</td>
+        <td align=center><code>CAN_TX_KEY_Task</code></td>
         <td align=center>Thread</td>
         <th align=center>60 ms</th>
-        <th align=center>5 &mu;s</th>
+        <th align=center>180 &mu;s</th>
       </tr>
       <tr>
         <td align=center>4</td>
-        <td align=center>CAN_TX_Task</td>
+        <td align=center><code>CAN_TX_Task</td>
         <td align=center>Thread</td>
         <th align=center>60 ms</th>
-        <th align=center>0.9 ms</th>
+        <th align=center>32.4 ms</th>
       </tr>
       <tr>
         <td align=center>5</td>
-        <td align=center>displayUpdateTask</td>
+        <td align=center><code>displayUpdateTask</code></td>
         <td align=center>Thread</td>
         <th align=center>100 ms</th>
         <th align=center>17.6 ms</th>
@@ -90,6 +90,8 @@ The table below lists all tasks performed by the system, their method of impleme
     </table>
 
 ## Critical Instant Analysis
+Using the times in the table above and the latency formula: 
+
 
 ## Shared Data Structures
 
