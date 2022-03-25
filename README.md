@@ -144,19 +144,73 @@ Sample generation interrupt combines the information into a third array, which i
 The aformentioned structure allowed us to minimise the use of blocking dependencies for data protection, thus minimising the risk of deadlock.
 
 ## Advanced Features
-The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules.
+The pictures below demonstrate the implementation of several advanced features. All of the waveforms present here come from oscilloscope measurements on our synthesizer modules. Advanced features where implemented where: 
+
+•Demonstrates principles of real-time / concurrent programming
+•Makes better use of the microcontroller hardware to improve performance
+•Allow the group to collaborate effectively
+•Features are interesting and fun or have practical applications.
+
 ### 1. Polyphony Up To 4 Keys
-### 2. Sine, Triangle, Square, CML Waveforms
+### 2. Variable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
+The desired waveform is displayed in the UI and can be selected by rotating knob 2. The table below showcases oscilloscope measurements for each of the possible waveforms.
+<table align="center">
+  <tr>
+      <th align=center>Type</th>
+      <th align=center>Waveform</th>
+      <th align=center>Comments</th>
+  </tr>
+ <tr>
+      <th align=center>Sine</th>
+      <th align=center><img src="/images/sine.png" alt="sine" width="400"/></th>
+      <th align=center>Note: C3<br>Measured Frequency: 129.29 Hz</th>
+  </tr>
+  <tr>
+      <th align=center>Triangle</th>
+      <th align=center><img src="/images/triangle.png" alt="triangle" width="400"/></th>
+      <th align=center>Note: C3<br>Measured Frequency: 129.60 Hz<br>Parasitic capacitance affects the waveform</th>
+  </tr>
+ <tr>
+      <th align=center>Square</th>
+      <th align=center><img src="/images/square.png" alt="square" width="400"/></th>
+      <th align=center>Note: C3<br>Measured Frequency: 131.71 Hz<br>Frequency response of the filter heavily attenuates higher frequencies</th>
+  </tr>
+ <tr>
+      <th align=center>Sawtooth</th>
+      <th align=center><img src="/images/saw.png" alt="saw" width="400"/></th>
+      <th align=center>Note: C3<br>Measured Frequency: 129.35 Hz<br>Parasitic capacitance affects the wave significantly</th>
+  </tr>
+ <tr>
+      <th align=center>CML</th>
+      <th align=center><img src="/images/CML.png" alt="CML" width="400"/></th>
+      <th align=center>Note: C3<br>Measured Frequency: 129.27 Hz</th>
+ </tr>
+</table>
+
 ### 3. Delay with Adjustable Period
+<p align="center">
+<img src="/images/delay.png" alt="delay" width="500"/>
+</p>
+
 ### 4. Tremolo with Joystick Control
-
-
+Tremolo
+<p align="center">
+<img src="/images/tremolo.png" alt="tremolo" width="500"/>
+</p>
 
 ### 5. Octave Selection
 ### 6. Keyboard Auto-Detect
 
 ## User Interface
+knob0 :
+knob1 : Press to activate delay and rotate to change delay time
+knob2 : 
+knob3 : Press to switch to helper menu
+knob4 : Rotate to change octaves
+Joystick: Press to activate Tremolo and 
+
 ## Real Time System Architecture Decisions 
+
 
 Asynchronus vs Synchronus. more flexible and robust system.
 queue is better since
@@ -165,6 +219,8 @@ The buffer allows a mismatch in processing rates between writing task and readin
 A queue can be used to give a task more time and lower worst-case utilisation
 Queue allows critical instant analysis to consider average, not peak initiation interval
 Can also lower task priority even if initiations are not bursty
+
+## CAN Communication Decisions
 
 ```mermaid
   graph TD;
