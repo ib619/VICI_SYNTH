@@ -255,7 +255,7 @@ Also, under the restriction of 3 keyboards for team, this handshake allows to co
 
 ## AnalogWrite Timing and other 
 
-analogWrite and analogRead (used in the sampleISR and scanKeysTask respectively) represent 45% and 23% of the **maximium** exection time for their tasks. Each analogueWrite and analogRead takes around 10 μs and 94 μs respectively. This means that the maximium speeds these function are run is more than sufficient for a synth to produce music/audio frequencies in the audible spectrum.
+analogWrite and analogRead (used in the sampleISR and scanKeysTask respectively) represent 45% and 23% of the **maximium** exection time for their tasks. Each analogueWrite and analogRead takes around 10 μs and 94 μs respectively. This means that the maximium speeds these function can be run is more than sufficient for a synth to produce music/audio frequencies in the audible spectrum.
 
 However, for systems with more strict time requirements it may be a problem, however there is a way around this. For example the AnalogWrite function has a delay due to the branching to decide if DAC or PWM is to be used, however on some pins both operations are completed. AnalogWrite first looks up the DAC address for a given pin by calling get_dac_channel(), secondly if uninitialised, HAL_DAC_Init() and HAL_DAC_ConfigChannel() are called.
 
