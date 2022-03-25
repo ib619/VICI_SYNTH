@@ -134,10 +134,15 @@ The pictures below demonstrate the implementation of several advanced features. 
 ### 1. Polyphony Up To 4 Keys
 ### 2. Variable Waveforms: Sine, Triangle, Square, Sawtooth, CML Waveforms
 ### 3. Delay with Adjustable Period
+<p align="center">
+<img src="/images/delay.png" alt="delay" width="500"/>
+</p>
+
 ### 4. Tremolo with Joystick Control
-
 Tremolo
-
+<p align="center">
+<img src="/images/tremolo.png" alt="tremolo" width="500"/>
+</p>
 
 ### 5. Octave Selection
 ### 6. Keyboard Auto-Detect
