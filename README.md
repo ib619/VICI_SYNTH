@@ -135,10 +135,22 @@ The pictures below demonstrate the implementation of several advanced features. 
 ### 2. Sine, Triangle, Square, CML Waveforms
 ### 3. Delay with Adjustable Period
 ### 4. Tremolo with Joystick Control
+
+
+
 ### 5. Octave Selection
 ### 6. Keyboard Auto-Detect
 
 ## User Interface
+## system architecture decisions 
+
+Asynchronus vs Synchronus. more flexible and robust system.
+queue is better since
+A queue is a FIFO buffer for passing information between tasks
+The buffer allows a mismatch in processing rates between writing task and reading task
+A queue can be used to give a task more time and lower worst-case utilisation
+Queue allows critical instant analysis to consider average, not peak initiation interval
+Can also lower task priority even if initiations are not bursty
 
 ```mermaid
   graph TD;
