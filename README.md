@@ -249,15 +249,15 @@ Access by pressing Knob 3 and change page by pressing Knob 4.
 </p>
 
 ## Real Time System Architecture Decisions 
+Two systems where explored -
 
+**System 1 :** Synchronus system where sample generation is run on every sample interrupt
 
-Asynchronus vs Synchronus. more flexible and robust system.
-queue is better since
-A queue is a FIFO buffer for passing information between tasks
-The buffer allows a mismatch in processing rates between writing task and reading task
-A queue can be used to give a task more time and lower worst-case utilisation
-Queue allows critical instant analysis to consider average, not peak initiation interval
-Can also lower task priority even if initiations are not bursty
+**System 2 :** Asynchronus system where samples are written to a buffer and an interrupt reads values to the output where reading has a sample frequency of 22k Hz, faster than writing.
+
+System 2 has many advantages as it reduced the priority of the sample computation code and samples do not need to be produced as exactly 22k Hz, they can be produced in bursts and other tasks can fit around this which allows for a more flexible programme. Using this system allows more flexibility in giving certain tasks more time and to lower worst case utilisation, consider average and not peak initiation interval for critical time analysis and even lower task priority.
+
+This System is beneficial when implementing advanced features that require more computation such as reverb. For example, Shroeders Reverb uses multiple Comb filters to create multiple sampling streams with varying gain and delay which are written to different buffers, these are then processed through multiple allpass filters which has a flat frequency response but provides different phase shifts for each frequency. System 1 is not able to create this effect as it cannot handle the computation of multiple sampling streams running at 22k Hz with large buffer sizes. However, System 1 offers the advantages of a reliable synchronus system with lower chances of 'breaking' . 
 
 ## CAN Communication Decisions
 The two CAN messaging formats were explored:
